@@ -10,6 +10,6 @@ public class Application extends AST{
     }
 
     public String toString(){
-        return "";
+        return "("+lhs.toString()+" "+rhs.toString()+")";
     }
 }

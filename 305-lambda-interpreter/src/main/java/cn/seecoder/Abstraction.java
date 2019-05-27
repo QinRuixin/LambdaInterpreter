@@ -10,6 +10,6 @@ public class Abstraction extends AST {
     }
 
     public String toString(){
-        return "";
+        return "\\."+body.toString();
     }
 }
