@@ -14,7 +14,6 @@ public class Parser {
     public AST parse() {
 
         AST ast = term(new ArrayList<>());
-//        this.lexer.match(TokenType.EOF);
 //        System.out.println(lexer.match(TokenType.EOF));
         return ast;
     }
@@ -25,15 +24,11 @@ public class Parser {
             String id = this.lexer.token(TokenType.LCID);
             this.lexer.match(TokenType.DOT);
             ctx.add(0, id);
-            //应该如何设置Index？？？
-
-            ArrayList<String> temp = new ArrayList<>();
-            for (String s:
-                 ctx) {
-                temp.add(s);
-            }
             AST term = this.term(ctx);
-            return new Abstraction(new Identifier(id,Integer.toString(temp.indexOf(id))), term);
+            ctx.remove(0);
+            //实际上无影响？
+            return new Abstraction(new Identifier(id,"0"), term);
+//            return new Abstraction(new Identifier(id,Integer.toString(ctx.indexOf(id))), term);
         } else {
             return this.application(ctx);
         }
