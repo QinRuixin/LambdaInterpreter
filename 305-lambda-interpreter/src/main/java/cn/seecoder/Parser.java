@@ -24,13 +24,16 @@ public class Parser {
         if (this.lexer.skip(TokenType.LAMBDA)) {
             String id = this.lexer.token(TokenType.LCID);
             this.lexer.match(TokenType.DOT);
-            //待完善
             ctx.add(0, id);
-//            ctx.add(id);
-            AST term = this.term(ctx);
-
             //应该如何设置Index？？？
-            return new Abstraction(new Identifier(id,"1"), term);
+
+            ArrayList<String> temp = new ArrayList<>();
+            for (String s:
+                 ctx) {
+                temp.add(s);
+            }
+            AST term = this.term(ctx);
+            return new Abstraction(new Identifier(id,Integer.toString(temp.indexOf(id))), term);
         } else {
             return this.application(ctx);
         }
@@ -64,7 +67,7 @@ public class Parser {
             return term;
         } else if (lexer.next(TokenType.LCID)) {
             String id = this.lexer.token(TokenType.LCID);
-            //待修改
+            //
             return new Identifier(id,Integer.toString(ctx.indexOf(id)));
         }
         return null;
