@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 public class Parser {
     Lexer lexer;
-    int i = 0;
-    int j = 0;
 
     public Parser(Lexer l) {
         lexer = l;
@@ -26,9 +24,7 @@ public class Parser {
             ctx.add(0, id);
             AST term = this.term(ctx);
             ctx.remove(0);
-            //实际上无影响？
             return new Abstraction(new Identifier(id,"0"), term);
-//            return new Abstraction(new Identifier(id,Integer.toString(ctx.indexOf(id))), term);
         } else {
             return this.application(ctx);
         }
@@ -47,6 +43,8 @@ public class Parser {
             if (right == null) {
                 return left;
             } else {
+                //Application ::= Application Atom
+                //              | Atom
                 left = new Application(left, right);
             }
 
@@ -55,14 +53,13 @@ public class Parser {
 
     private AST atom(ArrayList<String> ctx) {
         // write your code here
-        //Atom ::= LPAREN Term RPAREN| LCID
+        // Atom ::= LPAREN Term RPAREN| LCID
         if (lexer.skip(TokenType.LPAREN)) {
             AST term = term(ctx);
             lexer.match(TokenType.RPAREN);
             return term;
         } else if (lexer.next(TokenType.LCID)) {
             String id = this.lexer.token(TokenType.LCID);
-            //
             return new Identifier(id,Integer.toString(ctx.indexOf(id)));
         }
         return null;

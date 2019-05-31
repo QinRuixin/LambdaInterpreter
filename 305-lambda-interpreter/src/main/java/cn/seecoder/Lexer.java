@@ -50,7 +50,6 @@ public class Lexer {
                     do {
                         sb.append(c);
                         c = nextChar();
-//                    } while (Pattern.matches("[a-z][a-zA-Z]*", sb.toString()));
                     } while (c>='A'&&c<='z');
 
                     index -= 1;

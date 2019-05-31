@@ -28,6 +28,14 @@ public class Interpreter {
 
     private   AST evalAST(AST ast){
         //write your code here
+        if(isApplication(ast)){
+            Application app = (Application)ast;
+            if((!isApplication(app.lhs))&&(!isApplication(app.rhs))){
+                evalAST(app.lhs);
+            }else if(!isApplication(app.lhs)){
+
+            }
+        }
 
         return null;
 
