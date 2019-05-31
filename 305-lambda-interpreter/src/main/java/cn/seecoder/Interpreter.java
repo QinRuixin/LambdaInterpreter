@@ -28,9 +28,23 @@ public class Interpreter {
 
     private  AST evalAST(AST ast){
         while (true) {
+            //如果 t1 是值为 t1' 的项， t1 t2 求值为 t1' t2。即一个 application 的左侧先被求值。
+            //如果 t2 是值为 t2' 的项， v1 t2 求值为 v1 t2'。注意这里左侧的是 v1 而非 t1， 这意味着它是 value，不能再一步被求值，也就是说，只有左侧的完成之后，才会对右侧求值。
+            //application (\x. t12) v2 的结果，和 t12 中出现的所有 x 被有效替换之后是一样的。注意在对 application 求值之前，两侧必须都是 value。
+            /**
+             * 分情况讨论 App,Abs,Ide
+             *      若App
+             *          分左树为 Abs,App,Ide
+             *              Abs:替换
+             *              App:左树求值后如果右树可求则求，若左树为Abs,递归调用求值后返回
+             *              Ide:求右树后返回
+             *      若Abs
+             *          param固定，对body求值后返回
+             *      若Ide
+             *          直接返回
+             */
 
             if (isApplication(ast)) {
-                //
                 if (isAbstraction(((Application) ast).lhs)) {
                     ast = substitute(((Abstraction)((Application) ast).lhs).body, ((Application) ast).rhs);
                 }else if(isApplication(((Application) ast).lhs)){
