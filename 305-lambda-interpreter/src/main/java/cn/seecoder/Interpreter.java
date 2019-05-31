@@ -26,25 +26,56 @@ public class Interpreter {
         return evalAST(astAfterParser);
     }
 
+    //首先检测其是否为 application，如果是，则对其求值：
+    //若 application 的两侧都是值，只要将所有出现的 x 用给出的值替换掉； (3)
+    //否则，若左侧为值，给右侧求值；(2)
+    //如果上面都不行，只对左侧求值；(1)
+    //现在，如果下一个节点是 identifier，我们只需将它替换为它所表示的变量绑定的值。
+    //最后，如果没有规则适用于AST，这意味着它已经是一个 value，我们将它返回。
+
     private   AST evalAST(AST ast){
         //write your code here
-        if(isApplication(ast)){
-            Application app = (Application)ast;
-            if((!isApplication(app.lhs))&&(!isApplication(app.rhs))){
-                evalAST(app.lhs);
-            }else if(!isApplication(app.lhs)){
+        //待完善
+        while (true) {
+            if (isApplication(ast)) {
+                Application app = (Application) ast;
+                if ((isAbstraction(app.lhs)) && (isAbstraction(app.rhs))) {
+                    Abstraction absLeft = (Abstraction) app.lhs;
+                    ast = substitute(absLeft.body, app.rhs);
 
+                } else if (isAbstraction(app.lhs)) {
+//                } else if (isAbstraction(app.lhs)&&(!isIdentifier(app.rhs))) {
+                    ast = evalAST(app.rhs);
+                } else {
+                    ast = evalAST(app.lhs);
+                }
+            } else if (isAbstraction(ast)) {
+                Abstraction abs = (Abstraction) ast;
+                abs.body = evalAST(((Abstraction) ast).body);
+                return abs;
+            }else {
+                return ast;
             }
+//            if (isApplication(ast)) {
+//                Application app = (Application) ast;
+//                if (isAbstraction(app.lhs)) {
+//                    Abstraction absLeft = (Abstraction) app.lhs;
+//                    ast = substitute(absLeft.body, app.rhs);
+//
+//                } else if (isAbstraction(app.lhs)) {
+//                    ast = evalAST(app.rhs);
+//                } else {
+//                    ast = evalAST(app.lhs);
+//                }
+//            } else if (isAbstraction(ast)) {
+//                return ast;
+//            }
         }
-
-        return null;
 
     }
     private AST substitute(AST node,AST value){
 
         return shift(-1,subst(node,shift(1,value,0),0),0);
-
-
 
     }
 
@@ -66,8 +97,22 @@ public class Interpreter {
      */
     private AST subst(AST node, AST value, int depth){
         //write your code here
-
-        return null;
+        if(isApplication(node)){
+            Application app = (Application) node;
+            return new Application(subst(app.lhs,value,depth),subst(app.rhs,value,depth));
+        }else if(isAbstraction(node)){
+            Abstraction abs = (Abstraction) node;
+            return new Abstraction(abs.param,subst(abs.body,value,depth+1));
+        }else {
+            Identifier id = (Identifier) node;
+            int valueInt = Integer.parseInt(id.value);
+            if(valueInt==depth){
+                //待完善
+                return shift(depth,value,0);
+            }else {
+                return id;
+            }
+        }
 
     }
 
@@ -91,8 +136,21 @@ public class Interpreter {
 
     private AST shift(int by, AST node,int from){
         //write your code here
+        if(isApplication(node)){
+            Application app = (Application) node;
+            return new Application(shift(by,app.lhs,from),shift(by,app.rhs,from));
+        }else if(isAbstraction(node)){
+            Abstraction abs = (Abstraction) node;
+            return new Abstraction(abs.param,shift(by,abs.body,from+1));
+        }else {
+            Identifier id = (Identifier) node;
+            int newValue = Integer.parseInt(id.value);
+            if(newValue>=from){
+                newValue = by+Integer.parseInt(id.value);
+            }
+            return new Identifier(id.name,Integer.toString(newValue));
+        }
 
-        return null;
 
     }
     static String ZERO = "(\\f.\\x.x)";
