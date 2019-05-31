@@ -7,7 +7,7 @@ public class Interpreter {
     public Interpreter(Parser p){
         parser = p;
         astAfterParser = p.parse();
-        //System.out.println("After parser:"+astAfterParser.toString());
+        System.out.println("After parser:"+astAfterParser.toString());
     }
 
 
@@ -26,50 +26,36 @@ public class Interpreter {
         return evalAST(astAfterParser);
     }
 
-    //首先检测其是否为 application，如果是，则对其求值：
-    //若 application 的两侧都是值，只要将所有出现的 x 用给出的值替换掉； (3)
-    //否则，若左侧为值，给右侧求值；(2)
-    //如果上面都不行，只对左侧求值；(1)
-    //现在，如果下一个节点是 identifier，我们只需将它替换为它所表示的变量绑定的值。
-    //最后，如果没有规则适用于AST，这意味着它已经是一个 value，我们将它返回。
-
-    private   AST evalAST(AST ast){
-        //write your code here
-        //待完善
+    private  AST evalAST(AST ast){
         while (true) {
-            if (isApplication(ast)) {
-                Application app = (Application) ast;
-                if ((isAbstraction(app.lhs)) && (isAbstraction(app.rhs))) {
-                    Abstraction absLeft = (Abstraction) app.lhs;
-                    ast = substitute(absLeft.body, app.rhs);
 
-                } else if (isAbstraction(app.lhs)) {
-//                } else if (isAbstraction(app.lhs)&&(!isIdentifier(app.rhs))) {
-                    ast = evalAST(app.rhs);
-                } else {
-                    ast = evalAST(app.lhs);
+            if (isApplication(ast)) {
+                //
+                if (isAbstraction(((Application) ast).lhs)) {
+                    ast = substitute(((Abstraction)((Application) ast).lhs).body, ((Application) ast).rhs);
+                }else if(isApplication(((Application) ast).lhs)){
+                    ((Application) ast).lhs = evalAST(((Application) ast).lhs);
+                    if(!isIdentifier(((Application) ast).rhs)){
+                        ((Application) ast).rhs = evalAST(((Application) ast).rhs);
+                    }
+                    if(isAbstraction(((Application) ast).lhs)){
+                        ast = evalAST(ast);
+                    }
+                    return ast;
+                }else if(isIdentifier(((Application) ast).lhs)){
+                    ((Application) ast).rhs = evalAST(((Application) ast).rhs);
+                    return ast;
                 }
-            } else if (isAbstraction(ast)) {
-                Abstraction abs = (Abstraction) ast;
-                abs.body = evalAST(((Abstraction) ast).body);
-                return abs;
-            }else {
+
+            }
+            else if (isAbstraction(ast)) {
+                ((Abstraction) ast).body = evalAST(((Abstraction) ast).body);
                 return ast;
             }
-//            if (isApplication(ast)) {
-//                Application app = (Application) ast;
-//                if (isAbstraction(app.lhs)) {
-//                    Abstraction absLeft = (Abstraction) app.lhs;
-//                    ast = substitute(absLeft.body, app.rhs);
-//
-//                } else if (isAbstraction(app.lhs)) {
-//                    ast = evalAST(app.rhs);
-//                } else {
-//                    ast = evalAST(app.lhs);
-//                }
-//            } else if (isAbstraction(ast)) {
-//                return ast;
-//            }
+            else{
+                return ast;
+            }
+
         }
 
     }
@@ -107,7 +93,6 @@ public class Interpreter {
             Identifier id = (Identifier) node;
             int valueInt = Integer.parseInt(id.value);
             if(valueInt==depth){
-                //待完善
                 return shift(depth,value,0);
             }else {
                 return id;
@@ -226,6 +211,7 @@ public class Interpreter {
         };
 
         for(int i=0 ; i<sources.length; i++) {
+            i=5;
 
 
             String source = sources[i];
