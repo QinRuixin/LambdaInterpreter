@@ -79,13 +79,11 @@ public class Lexer {
 
     //check token == t
     public boolean next(TokenType t) {
-        //write your code here
         return t.equals(token);
     }
 
     //assert matching the token type, and move next token
     public void match(TokenType t) {
-        //write your code here
         if (next(t)) {
             nextToken();
             return;
@@ -96,7 +94,6 @@ public class Lexer {
 
     //skip token  and move next token
     public boolean skip(TokenType t) {
-        //write your code here
         if (next(t)) {
             nextToken();
             return true;
@@ -105,7 +102,6 @@ public class Lexer {
     }
 
     public String token(TokenType t) {
-        //待完善
         if (t == null) {
             return tokenvalue;
         }
