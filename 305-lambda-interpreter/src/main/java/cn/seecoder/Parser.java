@@ -3,17 +3,15 @@ package cn.seecoder;
 import java.util.ArrayList;
 
 public class Parser {
-    Lexer lexer;
+    private Lexer lexer;
 
     public Parser(Lexer l) {
         lexer = l;
     }
 
-    public AST parse() {
+    private AST parse() {
 
-        AST ast = term(new ArrayList<>());
-//        System.out.println(lexer.match(TokenType.EOF));
-        return ast;
+        return term(new ArrayList<>());
     }
 
     private AST term(ArrayList<String> ctx) {
