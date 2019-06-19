@@ -31,7 +31,6 @@ public class Parser {
     }
 
     private AST application(ArrayList<String> ctx) {
-        // write your code here
         // Application ::= Atom Application'
         AST left = atom(ctx);
 
@@ -52,7 +51,6 @@ public class Parser {
     }
 
     private AST atom(ArrayList<String> ctx) {
-        // write your code here
         // Atom ::= LPAREN Term RPAREN| LCID
         if (lexer.skip(TokenType.LPAREN)) {
             AST term = term(ctx);

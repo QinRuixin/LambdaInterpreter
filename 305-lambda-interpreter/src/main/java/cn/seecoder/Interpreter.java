@@ -35,7 +35,9 @@ public class Interpreter {
              *      若App
              *          分左树为 Abs,App,Ide
              *              Abs:替换
-             *              App:左树求值后求右树，若左树为Abs则为（app(abs AST)）结构，可替换，需继续求，不返回；若左树不是Abs，返回；
+             *              App:左树求值后求右树，
+             *                      之后若左树为Abs则为（app(abs AST)）结构，可替换，需继续求，不直接返回；
+             *                          若左树不是Abs，返回；
              *              Ide:求右树后返回
              *      若Abs
              *          param固定，对body求值后返回
@@ -46,6 +48,7 @@ public class Interpreter {
             if (isApplication(ast)) {
                 if (isAbstraction(((Application) ast).lhs)) {
                     ast = substitute(((Abstraction) ((Application) ast).lhs).body, ((Application) ast).rhs);
+
                 } else if (isApplication(((Application) ast).lhs)) {
                     ((Application) ast).lhs = evalAST(((Application) ast).lhs);
                     ((Application) ast).rhs = evalAST(((Application) ast).rhs);
@@ -79,7 +82,7 @@ public class Interpreter {
      * value替换node节点中的变量：
      * 如果节点是Applation，分别对左右树替换；
      * 如果node节点是abstraction，替入node.body时深度得+1；
-     * 如果node是identifier，则替换De Bruijn index值等于depth的identifier（替换之后value的值加深depth）
+     * 如果node是identifier，则替换De Bruijn index值等于depth的identifier（替换之后value的值可能要加深depth）
      *
      * @param value 替换成为的value
      * @param node  被替换的整个节点
@@ -217,25 +220,34 @@ public class Interpreter {
                 app(MIN, FOUR, TWO),//31
         };
 
-        for (int i = 0; i < sources.length; i++) {
-            i = 5;
+//        for (int i = 0; i < sources.length; i++) {
+//
+//
+//            String source = sources[i];
+//
+//            System.out.println(i + ":" + source);
+//
+//            Lexer lexer = new Lexer(source);
+//
+//            Parser parser = new Parser(lexer);
+//
+//            Interpreter interpreter = new Interpreter(parser);
+//
+//            AST result = interpreter.eval();
+//
+//            System.out.println(i + ":" + result.toString());
+//
+//        }
 
+        String source = "\\y.\\x.x y";
+        System.out.println(source);
+        Lexer lexer = new Lexer(source);
+        Parser parser = new Parser(lexer);
+        Interpreter interpreter = new Interpreter(parser);
+        AST result = interpreter.eval();
 
-            String source = sources[i];
+        System.out.println(result.toString());
 
-            System.out.println(i + ":" + source);
-
-            Lexer lexer = new Lexer(source);
-
-            Parser parser = new Parser(lexer);
-
-            Interpreter interpreter = new Interpreter(parser);
-
-            AST result = interpreter.eval();
-
-            System.out.println(i + ":" + result.toString());
-
-        }
 
     }
 }

@@ -9,7 +9,11 @@ public class Lexer {
 
     public Lexer(String s) {
         index = 0;
-        source = s;
+        if (s.charAt(0) != '(' || s.charAt(s.length() - 1) != ')') {
+            source = '(' + s + ')';
+        } else {
+            source = s;
+        }
         nextToken();
     }
 
@@ -17,9 +21,9 @@ public class Lexer {
     private TokenType nextToken() {
 
         char c;
-        do{
+        do {
             c = nextChar();
-        }while (c==' ');
+        } while (c == ' ');
 
         switch (c) {
             case '(':
@@ -50,15 +54,15 @@ public class Lexer {
                     do {
                         sb.append(c);
                         c = nextChar();
-                    } while (c>='A'&&c<='z');
-
+                    } while (c >= 'A' && c <= 'z');
                     index -= 1;
+
                     tokenvalue = sb.toString();
                     token = TokenType.LCID;
                     System.out.println("LCID");
                     break;
                 } else {
-                    throw new IllegalArgumentException("输入错误1");
+                    throw new IllegalArgumentException("输入错误");
                 }
 
         }
@@ -67,36 +71,26 @@ public class Lexer {
 
     // get next char
     private char nextChar() {
-
-
-        if(index >= source.length()){
+        if (index >= source.length()) {
             return '\0';
         }
         index++;
-        return source.charAt(index-1);
+        return source.charAt(index - 1);
     }
 
 
-    //check token == t
-    public boolean next(TokenType t) {
-        //write your code here
-        return t.equals(token);
-    }
-
-    //assert matching the token type, and move next token
+    //断言 next 方法返回 true 并 skip(用于DOT、右括号)
     public void match(TokenType t) {
-        //write your code here
         if (next(t)) {
             nextToken();
             return;
         } else {
-            throw new IllegalArgumentException("输入错误2");
+            throw new IllegalArgumentException("输入错误");
         }
     }
 
-    //skip token  and move next token
+    //返回下一个 token 是否匹配 Token,如果匹配的话会跳过(用于LAMBDA、左括号)
     public boolean skip(TokenType t) {
-        //write your code here
         if (next(t)) {
             nextToken();
             return true;
@@ -104,14 +98,15 @@ public class Lexer {
         return false;
     }
 
+    //断言 next 方法并返回 token(LCID专用)
     public String token(TokenType t) {
-        //待完善
-        if (t == null) {
-            return tokenvalue;
-        }
         String temp = tokenvalue;
         match(t);
         return temp;
     }
 
+    //返回下一个 token 是否匹配 Token
+    public boolean next(TokenType t) {
+        return t.equals(token);
+    }
 }
