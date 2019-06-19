@@ -80,7 +80,7 @@ public class Interpreter {
 
     /**
      * value替换node节点中的变量：
-     * 如果节点是Applation，分别对左右树替换；
+     * 如果节点是Application，分别对左右树替换；
      * 如果node节点是abstraction，替入node.body时深度得+1；
      * 如果node是identifier，则替换De Bruijn index值等于depth的identifier（替换之后value的值可能要加深depth）
      *
