@@ -3,13 +3,13 @@ package cn.seecoder;
 import java.util.ArrayList;
 
 public class Parser {
-    private Lexer lexer;
+     Lexer lexer;
 
     public Parser(Lexer l) {
         lexer = l;
     }
 
-    private AST parse() {
+    public AST parse() {
 
         return term(new ArrayList<>());
     }
